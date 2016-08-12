@@ -1,0 +1,3 @@
+# Conducted 87 flights on March 24 frequent serial loss spike switching from state 4 to state 3,
+#  NTP drift of subject pose and vicon as well as lost sensor readings completely for flights 33 --> 62.
+# Minor changes in flight testing thread and callback.

@@ -1,0 +1,27 @@
+<launch>
+  <!-- basic_flight.launch, created by: William Willie Wells, in June 2016 
+    to test basic flight node-->
+
+  <!--================================VICON Object====================================-->
+  <group ns="a">
+  <node pkg="vicon_pose" type="vicon_pose" name="conv_q_p" output="screen">
+    <param name="object_name" value="HERBIE" type="str" />
+  </node>
+  </group>
+
+  <!--======================MIT AscTec Protocol and Communication=====================-->
+    <!-- movement at constant velocity -->
+  <include file="$(find gps_testing)/launch/hummingbird_indoor.launch" />
+  <!--include file="$(find gps_testing)/launch/hummingbird_outdoor.launch" /-->
+  <!--include file="$(find gps_testing)/launch/firefly_outdoor.launch" /-->
+
+  <!--=====================================Main Node==================================-->
+  <group ns="a">
+    <node name="basic_flight" type="basic_flight" pkg="gps_testing" output="screen"></node>
+    <node required="true" name="test_flight" type="test_flight" pkg="gps_testing" output="screen">
+      <param name="position_change" value="0.7"/> <!-- meters -->
+      <param name="launch_height" value="0.5"/> <!-- meters -->
+      <param name="ctrl_rate" value="30"/> <!-- hertz -->
+    </node>
+  </group>
+</launch>

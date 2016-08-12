@@ -1,0 +1,2 @@
+# Discovered that CRC is still incorrect, rewrote CRC calculation, but CRC not operational, yet.
+# Testing with a case that should provide immediate response message  from arducopter mega.

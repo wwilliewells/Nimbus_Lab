@@ -1,0 +1,38 @@
+<launch>
+  <!-- Namespace for one UAV. Multiple UAVs require multiple namespaces -->
+  <group ns="a">
+    <!-- Get information such as motor and battery status from UAV -->
+    <node name="poll_status" type="rostopic" pkg="rostopic" args="pub
+    -r 1.0 'robot_poll' collab_msgs/AsctecPoll '{header: auto,
+    packets: 1}'"/>
+ 
+    <include file="$(find collab_launch)/common/record.launch" />
+    <include file="$(find collab_launch)/common/uav_comm.launch" />
+    <!-- Even indoors we need GPS, so that subject_status messages are published -->
+    <include file="$(find collab_launch)/common/poll_gps.launch" />
+	
+    <!-- Computer specific communication module. Make sure appropriate serial
+         interface is selected -->
+    <node name="robot_comm" type="serial_comm" pkg="communication">
+      <remap from="serial_rx_data" to="robot_rx_data"/>
+      <remap from="serial_tx_data" to="robot_tx_data"/>
+      <param name="serial_device" value="/dev/ttyUSB0"/>
+    </node>
+
+    <!-- Convert Vicon data to our coordinate system -->
+    <!--node pkg="vicon_pose" type="vicon_pose" name="conv_q_p">
+      <param name="object_name" value="crash" type="str" />
+    </node-->
+
+    <include file="$(find sphere)/launch/vel_ctrl_params.launch" /> 
+
+    <node name="pv_gui" type="pv_gui.py" pkg="pv_gui">
+      <param name="min_y" value="-2.0"/>
+      <param name="max_y" value="2.0"/>
+      <param name="min_x" value="-2.0"/>
+      <param name="max_x" value="2.0"/>
+      <param name="min_z" value="0.0"/>
+      <param name="max_z" value="2.5"/>
+    </node>
+  </group>
+</launch>

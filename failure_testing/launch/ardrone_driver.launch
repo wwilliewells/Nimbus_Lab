@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="ard_driver" type="ardrone_driver" pkg="ardrone_autonomy" args="-ip 192.168.2.5" output="log"/>
+
+</launch>
+

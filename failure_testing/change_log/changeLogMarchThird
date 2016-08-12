@@ -1,0 +1,5 @@
+# previous week: VMWare froze and would not load.
+# this week: Attempted to return code to the state prior to freeze.
+#  Encountered robot_tx_data errors causing mavlink_interface node to "die."
+#  Stratus was in state 5 = critical, first time this was confirmed, arm unusually hot,
+#  may coincide.

@@ -1,0 +1,130 @@
+<launch>
+  <!--============================Communication and Protocol===============================-->
+  <include file="$(find flight_testing)/launch/ardrone_common.launch" />
+
+  <group ns="a">
+    <!--param name="sim_latitude" value="40.821187"/>
+    <param name="sim_longitude" value="-96.704359"/-->
+    
+    <!--=================================PID Controller====================================-->
+    <node name="pid_ctrl" type="quad_pid" pkg="pose_control">
+      <param name="ctrl_rate" value="30"/>
+    
+          <!-- Filtering and control output options -->
+          <!-- Fly under Vicon control, so the thrust should emulate the
+               manual throttle control, not the barometric pressure control. -->
+      <param name="enable_baro_ctrl_mode" value="false" />
+          <!-- Not flying in barometric pressure control, so do not collapse the deadband. -->
+      <param name="collapse_deadband" value="false" />
+          <!-- Disable the IIR filter on thrust output, because Vicon control
+               gives a good height estimate, resulting in smooth flight. -->
+      <param name="enable_thrust_iir_filter" value="false" />
+          <!-- Vicon control does not require use to smooth derivative input,
+               so disable filtering on this term -->
+      <param name="enable_derv_fir_filter" value="true" />
+
+          <!-- PITCH -->
+      <param name="k_prop_pitch" value="0.5"/>
+      <param name="k_intg_pitch" value="0.0"/>
+      <param name="k_derv_pitch" value="0.25"/>
+      <param name="pitch_offset" value="0.0"/>
+      <param name="pitch_intg_min_sat" value="0.0"/>
+      <param name="pitch_intg_max_sat" value="0.0"/>
+     
+           <!-- ROLL  -->
+      <param name="k_prop_roll" value="0.5"/>
+      <param name="k_intg_roll" value="0.0"/>
+      <param name="k_derv_roll" value="0.25"/>
+      <param name="roll_offset" value="0.0"/>
+      <param name="roll_intg_min_sat" value="0.0"/>
+      <param name="roll_intg_max_sat" value="0.0"/>
+     
+          <!-- YAW  -->
+      <param name="k_prop_yaw" value="1.0"/>
+      <param name="k_intg_yaw" value="0.0"/>
+      <param name="k_derv_yaw" value="0.4"/>
+      <param name="yaw_offset" value="0.0"/>
+      <param name="yaw_intg_min_sat" value="0.0"/>
+      <param name="yaw_intg_max_sat" value="0.0"/>
+     
+          <!-- THRUST   -->
+      <param name="k_prop_thrust" value="0.4"/>
+      <param name="k_intg_thrust" value="0.0"/>
+      <param name="k_derv_thrust" value="-0.2"/>
+      <param name="thrust_offset" value="0.9"/>
+      <param name="thrust_intg_min_sat" value="-0.75"/>
+      <param name="thrust_intg_max_sat" value="1.0"/>
+    </node>
+
+    <!--========================State Specific Position Controllers=====================-->
+    <node name="pid_waypose_arb" type="arb_subject_ctrl" pkg="arbitration" output="screen">
+      <remap from="shape_shifter" to="pid_waypose"/>
+      <rosparam param="state_mappings">
+        [
+        [ "launch_waypose", [ 2 ] ],
+        [ "land_waypose", [ 6 ] ],
+        [ "task_waypose", [ 4, 5, 7, 8 ] ],
+        ]
+      </rosparam>
+    </node><!-- could this be done on task_waypose for just states 5 and 6 -->
+
+    <node name="launch_ctrl" type="delta_ctrl" pkg="pose_control" output="screen">
+      <remap from="delta_waypose" to="launch_waypose"/>
+      <param name="ctrl_rate" value="30.0"/>
+      <param name="delta_rate" value="0.4"/>
+      <param name="delta_term" value="translation_z"/>
+      <param name="delta_state" value="2"/>
+      <param name="thrust_check" value="1"/>
+    </node>
+
+    <node name="land_ctrl" type="delta_ctrl" pkg="pose_control" output="screen">
+      <remap from="delta_waypose" to="land_waypose"/>
+      <param name="ctrl_rate" value="30.0"/>
+      <param name="delta_rate" value="-0.2"/>
+      <param name="delta_term" value="translation_z"/>
+      <param name="delta_state" value="6"/>
+    </node>
+
+    <!--======================State Specific PID Controller Input======================-->
+
+    <node name="ctrl_input_arb" type="arb_subject_ctrl" pkg="arbitration" output="screen">
+      <remap from="shape_shifter" to="quad_ctrl_input"/>
+      <rosparam param="state_mappings">
+        [
+        [ "off_input", [ 1 ] ],
+        [ "motor_start_input", [ 2 ] ],
+        [ "motor_stop_input", [ 3 ] ],
+        [ "motor_test_input", [ 4 ] ],
+        [ "launch_input", [ 5 ] ],
+        [ "pid_input", [ 6, 7, 8 ] ],
+        ]
+      </rosparam>
+    </node>
+
+    <node name="off" type="rostopic" pkg="rostopic"
+      args="pub -r 30.0 'off_input' collab_msgs/QuadCtrlInput
+      '{header: auto, pitch: 0.0, roll: 0.0, yaw: 0.0, thrust: -1.0,
+      pitch_ctrl: 1, roll_ctrl: 1, yaw_ctrl: 1, thrust_ctrl: 1,
+      altitude_ctrl: 0, gps_ctrl: 0}'"/>
+
+    <node name="motor_start" type="rostopic" pkg="rostopic"
+      args="pub -r 30.0 'motor_start_input' collab_msgs/QuadCtrlInput
+      '{header: auto, pitch: 0.0, roll: 0.0, yaw: 1.0, thrust: -1.0,
+      pitch_ctrl: 1, roll_ctrl: 1, yaw_ctrl: 1, thrust_ctrl: 1,
+      altitude_ctrl: 0, gps_ctrl: 0}'"/>
+
+    <node name="motor_stop" type="rostopic" pkg="rostopic"
+      args="pub -r 30.0 'motor_stop_input' collab_msgs/QuadCtrlInput
+      '{header: auto, pitch: 0.0, roll: 0.0, yaw: -1.0, thrust: -1.0,
+      pitch_ctrl: 1, roll_ctrl: 1, yaw_ctrl: 1, thrust_ctrl: 1,
+      altitude_ctrl: 0, gps_ctrl: 0}'"/>
+
+    <node name="launch" type="rostopic" pkg="rostopic"
+      args="pub -r 30.0 'launch_input' collab_msgs/QuadCtrlInput
+      '{header: auto, pitch: 0.0, roll: 0.0, yaw: 0.0, thrust: -1.0,
+      pitch_ctrl: 1, roll_ctrl: 1, yaw_ctrl: 1, thrust_ctrl: 1,
+      altitude_ctrl: 0, gps_ctrl: 0}'"/>
+
+  </group>
+</launch>
+

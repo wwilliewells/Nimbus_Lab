@@ -1,0 +1,95 @@
+<launch>
+  <node name="pv_hybrid_ctrl" type="pv_hybrid_ctrl" pkg="pv_ctrl">
+    <param name="ctrl_rate" value="20.0"/>
+    <!-- POSITION -->
+    <!-- X -->
+    <param name="moving_k_prop_posn_x" value="0.2" />
+    <param name="moving_k_intg_posn_x" value="0.06" />
+    <param name="moving_k_derv_posn_x" value="0.3" />
+    <param name="moving_k_intg_min_sat_posn_x" value="-1.0" />
+    <param name="moving_k_intg_max_sat_posn_x" value="1.0" />
+
+    <!-- Y -->
+    <param name="moving_k_prop_posn_y" value="0.2" />
+    <param name="moving_k_intg_posn_y" value="0.06" />
+    <param name="moving_k_derv_posn_y" value="0.3" />
+    <param name="moving_k_intg_min_sat_posn_y" value="-1.0" />
+    <param name="moving_k_intg_max_sat_posn_y" value="1.0" />
+
+    <!-- Z -->
+    <param name="moving_k_prop_posn_z" value="-0.4" />
+    <param name="moving_k_intg_posn_z" value="-0.1" />
+    <param name="moving_k_derv_posn_z" value="-0.2" />
+    <param name="moving_k_intg_min_sat_posn_z" value="-0.75" />
+    <param name="moving_k_intg_max_sat_posn_z" value="1.0" />
+
+    <!-- YAW -->
+    <param name="moving_k_prop_posn_yaw" value="0.5" />
+    <param name="moving_k_intg_posn_yaw" value="0.0" />
+    <param name="moving_k_derv_posn_yaw" value="0.0" />
+    <param name="moving_k_intg_min_sat_posn_yaw" value="0.0" />
+    <param name="moving_k_intg_max_sat_posn_yaw" value="0.0" />
+
+    <!-- VELOCITY -->
+    <!-- X -->
+    <param name="moving_k_prop_vel_x" value="0.2" />
+    <param name="moving_k_intg_vel_x" value="0.06" />
+    <param name="moving_k_derv_vel_x" value="0.0" />
+    <param name="moving_k_intg_min_sat_vel_x" value="-2.0" />
+    <param name="moving_k_intg_max_sat_vel_x" value="2.0" />
+
+    <!-- Y -->
+    <param name="moving_k_prop_vel_y" value="0.2" />
+    <param name="moving_k_intg_vel_y" value="0.06" />
+    <param name="moving_k_derv_vel_y" value="0.0" />
+    <param name="moving_k_intg_min_sat_vel_y" value="-1.0" />
+    <param name="moving_k_intg_max_sat_vel_y" value="1.0" />
+
+    <!-- Z -->
+    <param name="moving_k_prop_vel_z" value="-0.4" />
+    <param name="moving_k_intg_vel_z" value="-0.1" />
+    <param name="moving_k_derv_vel_z" value="0.0" />
+    <param name="moving_k_intg_min_sat_vel_z" value="-0.75" />
+    <param name="moving_k_intg_max_sat_vel_z" value="1.0" />
+
+    <!-- YAW -->
+    <param name="moving_k_prop_vel_yaw" value="0.0" />
+    <param name="moving_k_intg_vel_yaw" value="0.0" />
+    <param name="moving_k_derv_vel_yaw" value="0.0" />
+    <param name="moving_k_intg_min_sat_vel_yaw" value="0.0" />
+    <param name="moving_k_intg_max_sat_vel_yaw" value="0.0" />
+
+    <!-- Output filter. Will work on both moving and hovering -->
+    <param name="moving_roll_output_filter" value="false" />
+    <param name="moving_pitch_output_filter" value="false" />
+    <param name="moving_thrust_output_filter" value="false" />
+    <rosparam param="moving_roll_coeff_a">
+      [1]
+    </rosparam>
+    <rosparam param="moving_roll_coeff_b">
+      [0.333, 0.333, 0.333]
+    </rosparam>
+    <rosparam param="moving_pitch_coeff_a">
+      [1]
+    </rosparam>
+    <rosparam param="moving_pitch_coeff_b">
+      [0.333, 0.333, 0.333]
+    </rosparam>
+    <rosparam param="moving_thrust_coeff_a">
+      [1]
+    </rosparam>
+    <rosparam param="moving_thrust_coeff_b">
+      [0.333, 0.333, 0.333]
+    </rosparam>
+
+    <!-- OFFSETS -->
+    <param name="moving_k_offset_thrust" value="0.8" />
+  </node>
+
+  <node name="pv_pid_ctrl" type="pv_pid_ctrl" pkg="pv_ctrl">
+    <param name="baro_ctrl_mode" value="false" />
+    <param name="collapse_deadband" value="false" />
+    <remap from="pid_output" to="quad_ctrl_input" />
+  </node>
+
+</launch>

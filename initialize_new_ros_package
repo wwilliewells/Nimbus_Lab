@@ -1,0 +1,17 @@
+# File: initialize_new_ros_package -- doing this over and over is annoying
+# Author: William Willie Wells
+# Date: July 2015
+
+path="src"
+mkdir "$path"
+
+shopt -s extglob
+mv !("$path") "$path"
+
+cd "$path"
+catkin_init_workspace
+cd ".."
+
+catkin_make
+
+echo "source $(pwd)/devel/setup.bash" >> ~/.bashrc

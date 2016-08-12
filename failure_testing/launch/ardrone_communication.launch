@@ -1,0 +1,21 @@
+<launch>
+  <!--=========================Remote Control Communication===========================-->
+  <node name="ard_driver" type="ardrone_driver" pkg="ardrone_autonomy" 
+    args="-ip 192.168.2.5" output="log"/>
+
+  <group ns="a">
+  <!--=====================================GUI========================================-->
+  <!-- graphical user interface monitoring -->
+  <node name="gui_monitor" type="gui_monitor.py" pkg="gui_fly"/>
+
+  <!--=================Ascending Technologies <==> ROS Communication==================-->
+      <!-- flight state, protocol, subject_status, translation of commands to AscTec -->
+  <node name="ctrl_state_machine" type="manage_subject_ctrl" pkg="state_machine"
+    output="screen"/>
+  <node name="ad_prot" type="ad_prot" pkg="ad_protocol" output="screen" />
+  <node name="robot_monitor" type="asctec_monitor" pkg="supervision" output="screen"/>
+  <node name="robot_trans" type="asctec_trans" pkg="translation"/>
+  </group>
+
+</launch>
+

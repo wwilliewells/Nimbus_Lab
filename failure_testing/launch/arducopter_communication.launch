@@ -1,0 +1,38 @@
+<launch>
+  <!--=========================Remote Control Communication===========================--> 
+  <!--include file="$(find mavros)/launch/apm.launch"/-->
+  <group ns="a">
+  <node name="robot_comm" type="serial_comm" pkg="communication">
+    <remap from="serial_rx_data" to="robot_rx_data"/><!--to="mavlink/from"/-->
+    <remap from="serial_tx_data" to="robot_tx_data"/><!--to="mavlink/to"/-->
+    <param name="serial_device" value="/dev/ttyUSB0"/>
+    <param name="serial_baudrate" value="57600"/>
+  </node>
+  </group>
+
+  <!--=========================ROS <==> MavROS Communication==========================-->
+  <!--node name="mavros_node" type="mavros_node" pkg="mavros"> 
+    <param name="fcu_url" value="/dev/ttyUSB0:57600"/-->
+    <!-- remaps? -->
+  <!--/node-->
+
+  <!-- write a node that maps from/to mavlink -->
+  <!--remap from="/a/robot_rx_data" to="mavlink/from"/>
+  <remap from="mavlink/to" to="/a/robot_tx_data"/-->
+
+  <group ns="a">
+  <!--=====================================GUI========================================-->
+  <!-- graphical user interface monitoring -->
+  <node name="gui_monitor" type="gui_monitor.py" pkg="gui_fly"/> 
+
+  <!--=================Ascending Technologies <==> ROS Communication==================-->
+      <!-- flight state, protocol, subject_status, translation of commands to AscTec -->
+  <node name="ctrl_state_machine" type="manage_subject_ctrl" pkg="state_machine" 
+    output="screen"/>
+  <!--node name="robot_prot" type="asctec_prot" pkg="protocol"/-->
+  <node name="mavlink_interface" type="communication" pkg="flight_testing" output="screen"/>
+  <node name="robot_monitor" type="asctec_monitor" pkg="supervision" output="screen"/>
+  <node name="robot_trans" type="asctec_trans" pkg="translation"/>
+  </group>
+
+</launch>

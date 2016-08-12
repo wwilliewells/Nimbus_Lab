@@ -1,0 +1,62 @@
+<launch>
+  <!-- Setting name and device number here requires commenting out equivalent -->
+  <!-- nodes in hummingbird_pv.launch, set ns="a" in hummingbird_pv to execute -->
+  <group ns="a">
+    <node pkg="vicon_pose" type="vicon_pose" name="conv_q_p" output="screen">
+      <param name="object_name" value="JENNY" type="str" />
+    </node>
+  </group>
+
+  <!-- Enable flight in variable velocity mode -->
+  <include file="$(find sphere)/launch/hummingbird_pv.launch" />
+
+  <!-- Change velocity while flying within a sphere bounded by +1 and -1 meter -->
+  <!-- in x, y, and z, from a user specified center position -->
+  <group ns="a">
+    <node name="sphere" type="sphere" pkg="sphere" output="screen">
+      <!-- Set object name -->
+      <param name="name" value="Tripod"/>
+
+      <!-- Set mode: sphere (true) or spiral (false) -->
+      <param name="mode" value="false"/>
+
+      <!-- En(dis)able test mode, fixes rotation -->
+      <param name="test_mode" value="false"/>
+
+      <!-- Set number of  divisions between 0 and 2*PI, [8.0, 64.0] -->
+      <param name="radian" value="10.0"/>
+
+      <!-- Set transition velocity -->
+      <param name="velocity" value="1.6"/>
+
+      <!-- Set active radius for sphere or minimum radius for spiral = [0.65, 1.0] -->
+      <param name="radius" value="0.65"/>
+
+      <!-- Set rate at which spiral contracts [0.05, 0.3] -->
+      <param name="contract_rate" value="0.07"/>
+
+      <!-- Set amount of cycles of each directional demonstration, [1, 12] -->
+      <param name="rev" value="1"/>
+
+      <!-- Set central position: X, Y = [-0.9, 0.9], Z = [1.1, 1.5] -->      
+      <param name="zCenter" value="1.2"/>
+      <param name="xCenter" value="0.9"/>
+      <param name="yCenter" value="-0.9"/>
+
+      <!-- Set launch height and speed: height = [0.1, 2.0], speed = [0.02, 1.0] -->
+      <param name="launch_height" value="0.7"/>
+      <param name="launch_speed" value="1.0"/>
+
+      <!-- Set rotation speed = [-1.0, 1.0] -->
+      <param name="rotate_speed" value="0.1"/>
+    </node>
+
+    <!--simulation mode-->
+    <!--param name="sim_latitude" value="40.821187"/>
+    <param name="sim_longitude" value="-96.704359"/>
+    <node name="robot_sim" type="asctec_sim" pkg="simulation">
+      <remap from="serial_rx_data" to="robot_rx_date"/>
+      <remap from="serial_tx_data" to="robot_tx_data"/>
+    </node-->
+  </group>
+</launch>

@@ -1,0 +1,77 @@
+<launch>
+  <!-- gps_testing.launch, created by: William Willie Wells, in May 2016 -->
+
+  <!--==========================NS-HP RTK GPS Communication==========================-->
+  <group ns="n">
+  <!--node name="nshp_comm" type="serial_comm" pkg="communication">
+    <remap from="serial_rx_data" to="nshp_rx_data"/>
+    <remap from="serial_tx_data" to="nshp_tx_data"/>
+    <param name="serial_device" value="/dev/ttyUSB3"/>
+    <param name="serial_baudrate" value="57600"/>
+  </node>
+
+  <node name="nshp_protocol" type="gps_device" pkg="gps_testing">
+    <param name="device" value="1"/>
+  </node--><!--NS-HP-->
+  </group>
+
+  <!--==========================Reach RTK GPS Communication==========================-->
+  <group ns="r">
+  <node name="reach_comm" type="serial_comm" pkg="communication">
+    <remap from="serial_rx_data" to="reach_rx_data"/>
+    <remap from="serial_tx_data" to="reach_tx_data"/>
+    <param name="serial_device" value="/dev/ttyUSB1"/>
+    <param name="serial_baudrate" value="57600"/>
+  </node>
+  
+  <node name="reach_protocol" type="gps_device" pkg="gps_testing">
+    <param name="device" value="2"/>
+  </node><!--Reach-->
+  </group>
+
+  <!--==========================Piksi RTK GPS Communication==========================-->
+  <group ns="p">
+  <!--node name="piksi_comm" type="serial_comm" pkg="communication">
+    <remap from="serial_rx_data" to="piksi_rx_data"/>
+    <remap from="serial_tx_data" to="piksi_tx_data"/>
+    <param name="serial_device" value="/dev/ttyUSB3"/>
+    <param name="serial_baudrate" value="57600"/>
+  </node>
+    
+  <node name="piksi_protocol" type="gps_device" pkg="gps_testing">
+    <param name="device" value="3"/>
+  </node--><!--Piksi-->
+  </group>
+
+  <group ns="a">
+  <!--================================Bag Recording===================================-->
+  <!--arg name="location"/-->
+  <node pkg="rosbag" name="record" type="record"
+    args="-a -o $(find gps_testing)/bags/"/>
+
+
+  <!--===============================RF Communication================================-->
+  <node name="rf_comm" type="serial_comm" pkg="communication">
+    <remap from="serial_rx_data" to="rf_rx_data"/>
+    <remap from="serial_tx_data" to="rf_tx_data"/>
+    <param name="serial_device" value="/dev/ttyUSB0"/>
+    <param name="serial_baudrate" value="57600"/>
+  </node><!--rf-->
+
+  <!--=======================================GUI=====================================-->
+    <!--node name="nimbus_gui" type="nimbus_gui.py" pkg="nimbus_gui" output="screen">
+      <param name="min_y" value="-2.0"/>
+      <param name="max_y" value="2.0"/>
+      <param name="min_x" value="-2.0"/>
+      <param name="max_x" value="2.0"/>
+      <param name="min_z" value="0.0"/>
+      <param name="max_z" value="2.5"/>
+    </node-->
+
+  <!--====================================Main Node==================================-->
+    <node name="xbee" type="xbee" pkg="gps_testing" output="screen">
+      <param name="receiver" value="35"/>
+    </node>
+ 
+  </group>
+</launch>
