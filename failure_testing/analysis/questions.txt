@@ -1,0 +1,28 @@
+ # Overall reliability and failure
+1. Under what conditions does an unmanned aerial vehicle fail? 1
+2. How reliable is each unmanned aerial vehicle? 1
+ # Energy Consumption
+3. What is the average and range energy consumption? 1
+4. What is the maximum energy consumption, average and range? 1
+
+ # Position 
+6. How precise is the position obtained versus the tasked position?
+ # Timing
+9. What is the average time it takes to perform the entire test? 1
+10. What is the variance in time it takes to perform the entire test?
+
+	
+1. Failure Types
+a. extra tasked waypose sent
+b. extra tasked waypose received
+c. did not receive a tasked waypose
+d. did not send a tasked waypose
+e. loss of serial communication
+f. lost Vicon
+g. motors fail to turn off
+h. slow startup
+
+i. Subject status failed to update but everything else normal
+j. Outside wireless signal interfered with wireless communication from laptop.
+
+5. What tasks require more energy consumption than the average task? height changes
