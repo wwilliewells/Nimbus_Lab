@@ -40,18 +40,18 @@ class gpsDevice{
     ros::NodeHandle nh, pnh;
 
     // ros publisher
-    ros::Publisher device_pub, receive_pub;
+    ros::Publisher transmit_pub, receive_pub;
 
     // ros subscribers
-    ros::Subscriber transmit_sub, device_sub;
+    ros::Subscriber transmit_sub, receive_sub;
 
     // messages
     std_msgs::UInt8MultiArray tx_data, rx_data;
-    gps_testing::Gps gps_rtk;
 
     // private variables
     int device;
     uint8_t decode;
+    bool radio;
 };
 #endif // gpsDevice
 

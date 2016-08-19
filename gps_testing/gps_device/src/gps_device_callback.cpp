@@ -7,27 +7,35 @@
 // class include
 #include "../include/gps_device.h" 
 
-// callback for device transmit <-- device serial port receive <-- gps transmit
+// callback for rover <-- base
 void gpsDevice::callbackTransmit(const boost::shared_ptr<std_msgs::UInt8MultiArray const> &msg){
-  // transmit base raw received data to other device or pose to rf
-  // header and footer: device number 
-  tx_data.data.push_back(device);
-  tx_data.data.push_back(23);
-  tx_data.data.push_back(device+1);
-  for(int i=0;i<(int)msg->data.size();i++){ tx_data.data.push_back(msg->data.at(i)); }
-  tx_data.data.push_back(9);
-  tx_data.data.push_back(12);
+  //if(radio){ 
+    // insert header into buffer 
+    tx_data.data.push_back(device);
+    tx_data.data.push_back(23);
+    tx_data.data.push_back(device+1);
+  //}
 
-  device_pub.publish(tx_data); // shared topic
+  // insert data into buffer
+  for(int i=0;i<(int)msg->data.size();i++){ tx_data.data.push_back(msg->data.at(i)); }
+
+  //if(radio){
+    // insert footer into buffer
+    tx_data.data.push_back(9);
+    tx_data.data.push_back(12);
+  //}
+
+  // publish buffer
+  transmit_pub.publish(tx_data);
   tx_data.data.clear();
 }
 
-// callback for rf receive --> device serial port transmit --> gps receive
+// callback for rover --> base
 void gpsDevice::callbackReceive(const boost::shared_ptr<std_msgs::UInt8MultiArray const> &msg){
   // publish to base station -- close loop
   for(int i=0;i<(int)msg->data.size();i++){
     switch(decode){
-      case 0: // scan device data stream for relevant data
+      case 0: // scan data stream for relevant data
         if(msg->data.at(i) == device){ decode = 1; } break;
       case 1: // potential relevant data found 
         if(msg->data.at(i) == 23){ decode = 2; } 

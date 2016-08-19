@@ -33,7 +33,8 @@ void FlightTest::startup(){
     while(previous_state.state != 4){ changeState(1.0,4); }
   }
 
-  test_enabled = true; ROS_INFO("pitch and roll test enabled");
+  test_enabled = true; 
+  ROS_INFO("pitch and roll test enabled");
   start_request = false;
 
   mel.unlock();
@@ -80,8 +81,10 @@ void FlightTest::land(){
 		
   // transition to IDLE
   while(previous_state.state != 4){ 
-    ROS_INFO("returning to idle"); changeState(2.0,4); land_idle = true; }
-  //land_idle = true;
+    ROS_INFO("returning to idle"); 
+    changeState(2.0,4); 
+    land_idle = true; 
+  }
 
   // transition to OFF
   while(status.motors_status){ if(previous_state.state == 3){ break; } changeState(3.0,3); }
@@ -101,7 +104,6 @@ void FlightTest::stopThread(int t){
     case(0): flight_thread->join(); break;
     case(1): pose_thread->join(); break;
     case(2): state_thread->join(); break;
-    //case(3): status_thread->join(); break;
     case(3): control_thread->join(); break;
     default:  break;
   }
@@ -116,8 +118,6 @@ void FlightTest::startThread(int t){
       pose_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&FlightTest::poseThread,this))); break;
     case(2):
       state_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&FlightTest::stateThread,this))); break; 
-    //case(3):
-    //  status_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&FlightTest::statusThread,this))); break;
     case(3):
       control_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&FlightTest::controlThread,this))); break;
     default: break;
@@ -154,7 +154,8 @@ void FlightTest::controlThread(){
           target_qci.pitch = target_qci.yaw = 0.0;
         }else if(test_command > 4*test_length){ 
           target_qci.roll = target_qci.pitch = target_qci.yaw = 0.0; 
-          test_enabled = false; ROS_INFO("exitting pitch and roll test"); 
+          test_enabled = false; 
+          ROS_INFO("exitting pitch and roll test"); 
         }
         test_command++;
       }else if(land_idle && previous_state.state != 3){ initialQCI(); }

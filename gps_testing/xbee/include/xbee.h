@@ -12,7 +12,6 @@
 #include <std_msgs/UInt8MultiArray.h>
 
 // package message include
-#include <gps_testing/Ack.h>
 #include <gps_testing/Bytes.h>
 
 // c++ includes
@@ -38,9 +37,6 @@ class XBee{
   private:
     void callbackData(const boost::shared_ptr<std_msgs::UInt8MultiArray const>&);
     void callbackDevice(const boost::shared_ptr<std_msgs::UInt8MultiArray const>&);
-    void parsePacket(unsigned char *data, int length);
-    void publishRSSI(unsigned char *data, int length);
-    void publishPose(unsigned char *data, int length);
     void stream(const ros::TimerEvent&);
 
     // initializers
@@ -52,25 +48,27 @@ class XBee{
     // ros objects
     ros::NodeHandle nh, pnh;
     // ros publisher
-    ros::Publisher byte_pub, data_pub, rssi_pub, device_pub;
+    ros::Publisher byte_pub, rx_pub, tx_pub;
     // ros subscribers
-    ros::Subscriber data_sub, device_sub;
+    ros::Subscriber rx_sub, device_sub;
     ros::Timer dataStream;
 
     // Mutual Exclusion Lock
     boost::mutex mel;
 
     // acknowledge messages
-    gps_testing::Ack messageRx;
     gps_testing::Bytes byteLog;
-    std_msgs::UInt8MultiArray streamData, deviceTx, deviceRx;
+    std_msgs::UInt8MultiArray streamData, dataRx, deviceTx;
 
     // in(ex)ternal parameters
     uint32_t bytes_received;
     uint32_t total_bytes;
     uint8_t seq;
     uint8_t d_seq;
-    int len;
+    uint8_t bytesRead;
+    uint8_t c;
+    uint16_t length;
     int rcvr;
+    int j;
 };
 #endif

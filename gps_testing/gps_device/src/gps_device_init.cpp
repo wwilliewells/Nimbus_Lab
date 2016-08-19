@@ -13,44 +13,48 @@ void gpsDevice::initParams(){
   pnh.param("device",device,1); 
   if(device < 1 || device > 3){ device = 1; }
 
+  // set if radio connected  
+  pnh.param("radio",radio,true);
+
   decode = 0;
 }
 
 // initialize subscribers -- transmit and receive are with respect to rf
 void gpsDevice::initSubscribers(){
   // subscribe to device serial port receive <-- gps transmit
-  if(device == 1){
-    transmit_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/n/nshp_rx_data",1000,
+  if(!radio){
+    // subscribe to intermittent device topic -- transmit path rover <-- base
+    transmit_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/a/reach_rx_data",20,
       &gpsDevice::callbackTransmit,this);
-  }
-  else if(device == 2){ 
-    transmit_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/r/reach_rx_data",1000,
-      &gpsDevice::callbackTransmit,this);
-  }
-  else if(device == 3){ 
-    transmit_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/p/piksi_rx_data",1000,
-      &gpsDevice::callbackTransmit,this);
-  }
 
-  // subscribe to rf serial port receive
-  device_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/a/device_rx_data",1000,
-    &gpsDevice::callbackReceive,this);
+    // subscrib to reach serial port receive -- receive path rover --> base
+    receive_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/a/device_tx_data",20,
+      &gpsDevice::callbackReceive,this);
+  }
+  else{ 
+    transmit_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/r/reach_rx_data",20,
+      &gpsDevice::callbackTransmit,this);
+
+    // subscribe to rf serial port receive
+    receive_sub = nh.subscribe<std_msgs::UInt8MultiArray>("/a/device_rx_data",20,
+      &gpsDevice::callbackReceive,this);
+  }
 }
 
 // initialize publishers
 void gpsDevice::initPublishers(){
   // publish gps estimate
-  if(device == 1){ 
-    receive_pub = nh.advertise<std_msgs::UInt8MultiArray>("/n/nshp_tx_data",1000,true); 
-  }
-  else if(device == 2){ 
-    receive_pub = nh.advertise<std_msgs::UInt8MultiArray>("/r/reach_tx_data",1000,true);
-  }
-  else if(device == 3){ 
-    receive_pub = nh.advertise<std_msgs::UInt8MultiArray>("/p/piksi_tx_data",1000,true);
-  }
+  if(!radio){ 
+    receive_pub = nh.advertise<std_msgs::UInt8MultiArray>("/a/reach_tx_data",20,true);
   
-  // publish to intermittent topic subscribed to by rf node
-  device_pub = nh.advertise<std_msgs::UInt8MultiArray>("/a/device_tx_data",1000,true);
+    // publish to intermittent topic subscribed to by rf node
+    transmit_pub = nh.advertise<std_msgs::UInt8MultiArray>("/a/device_rx_data",20,true); 
+  }
+  else{ 
+    receive_pub = nh.advertise<std_msgs::UInt8MultiArray>("/r/reach_tx_data",20,true);
+  
+    // publish to intermittent topic subscribed to by rf node
+    transmit_pub = nh.advertise<std_msgs::UInt8MultiArray>("/a/device_tx_data",20,true);
+  }
 }
 

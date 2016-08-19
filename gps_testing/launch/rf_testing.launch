@@ -26,7 +26,9 @@
   
   <node name="reach_protocol" type="gps_device" pkg="gps_testing">
     <param name="device" value="2"/>
-  </node><!--Reach-->
+  </node>
+
+  <node name="reach_pose" type="reach" pkg="gps_testing"></node><!--Reach-->
   </group>
 
   <!--==========================Piksi RTK GPS Communication==========================-->
@@ -73,5 +75,9 @@
       <param name="receiver" value="35"/>
     </node>
  
+    <node name="parse_type" type="parse_type" pkg="gps_testing"></node>
+
+    <!-- xbee node can be split further into receive and transmit nodes -->
+
   </group>
 </launch>

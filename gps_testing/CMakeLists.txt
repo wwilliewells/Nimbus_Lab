@@ -16,7 +16,7 @@ add_message_files(
    Sensor.msg
    Flight.msg
    Move.msg
-   Ack.msg
+   Rssi.msg
    Gps.msg
    Bytes.msg
 )
@@ -33,6 +33,7 @@ set(node4 xbee)
 set(node5 gps_device)
 set(node6 test_flight)
 set(node7 reach)
+set(node8 parse_type)
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -44,6 +45,7 @@ include_directories(
   ${node5}/include
   ${node6}/include
   ${node7}/include
+  ${node8}/include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -100,6 +102,13 @@ set(${node5}_srcs
   ${node5}/src/${node5}_callback.cpp
 )
 
+# parse type
+set(${node8}_srcs
+  ${node8}/src/${node8}.cpp
+  ${node8}/src/${node8}_init.cpp
+  ${node8}/src/${node8}_callback.cpp
+)
+
 ## test flight srcs
 set(${node6}_srcs
   ${node3}/src/${node6}.cpp
@@ -117,6 +126,7 @@ add_executable(${node4} ${xbee_srcs})
 add_executable(${node5} ${gps_device_srcs})
 add_executable(${node6} ${test_flight_srcs})
 add_executable(${node7} ${reach_srcs})
+add_executable(${node8} ${parse_type_srcs})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -127,6 +137,7 @@ add_dependencies(${node4} ${node1}_gencpp)
 add_dependencies(${node2} ${node1}_gencpp)
 add_dependencies(${node5} ${node1}_gencpp)
 add_dependencies(${node7} ${node1}_gencpp)
+add_dependencies(${node8} ${node1}_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${node1} ${catkin_LIBRARIES})
@@ -142,3 +153,5 @@ target_link_libraries(${node5} ${catkin_LIBRARIES})
 target_link_libraries(${node6} ${catkin_LIBRARIES})
 
 target_link_libraries(${node7} ${catkin_LIBRARIES})
+
+target_link_libraries(${node8} ${catkin_LIBRARIES})

@@ -1,0 +1,41 @@
+<launch>
+  <!-- gps_testing.launch, created by: William Willie Wells, in May 2016 -->
+
+  <!--==========================Reach RTK GPS Communication==========================-->
+  <group ns="r">
+    <node name="reach_comm" type="serial_comm" pkg="communication">
+      <remap from="serial_rx_data" to="reach_rx_data"/>
+      <remap from="serial_tx_data" to="reach_tx_data"/>
+      <param name="serial_device" value="/dev/ttyUSB1"/>
+      <param name="serial_baudrate" value="57600"/>
+    </node>
+  
+    <node name="reach_protocol" type="gps_device" pkg="gps_testing">
+      <param name="device" value="2"/>
+      <param name="radio" value="true"/>
+    </node>
+
+    <node name="reach_pose" type="reach" pkg="gps_testing"></node><!--Reach-->
+  </group>
+
+  <!--=========================Reach 2 RTK GPS Communication==========================-->
+  <group ns="a">
+    <node name="reach2_comm" type="serial_comm" pkg="communication">
+      <remap from="serial_rx_data" to="reach_rx_data"/>
+      <remap from="serial_tx_data" to="reach_tx_data"/>
+      <param name="serial_device" value="/dev/ttyUSB0"/>
+      <param name="serial_baudrate" value="57600"/>
+    </node>
+
+    <node name="reach2_protocol" type="gps_device" pkg="gps_testing">
+      <param name="device" value="2"/>
+      <param name="radio" value="false"/>
+    </node><!--Reach 2-->
+
+  <!--================================Bag Recording===================================-->
+   <!--arg name="location"/-->
+    <node pkg="rosbag" name="record" type="record"
+      args="-a -o $(find gps_testing)/bags/"/>
+
+  </group>
+</launch>
